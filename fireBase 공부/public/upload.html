@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav id="navbar-example2" class="navbar bg-light px-3 mb-3">
+    <a class="navbar-brand" href="./index.html">꽤쓸중</a>
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link" href="./upload.html">post</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="./login.html">login</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#scrollspyHeading3">Third</a></li>
+          <li><a class="dropdown-item" href="#scrollspyHeading4">Fourth</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#scrollspyHeading5">Fifth</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container mt-3">
+    <input type="text" class="form-control mt-2" id="title" placeholder="title">
+    <textarea class="form-control mt-2" id="content">content</textarea>
+    <input type="text" class="form-control mt-2" id="price" placeholder="price">
+    <input class="form-control mt-2" type="file" id="image">
+    <button class="btn btn-danger mt-3" id="send">올리기</button>
+  </div>
+
+
+
+
+
+
+
+
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> 
+
+  <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDQgcrT7DyPQOqGneG2rCVeSZ_AvOBba_8",
+        authDomain: "haha-a0bb0.firebaseapp.com",
+        projectId: "haha-a0bb0",
+        storageBucket: "haha-a0bb0.appspot.com",
+        messagingSenderId: "974233436018",
+        appId: "1:974233436018:web:01a5942662a60f93de27eb"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script>
+    const db = firebase.firestore();    /* 파이어베이스 db 소환 */
+    const storage = firebase.storage();  /* 파이어베이스 스토리지 소환 */
+    
+    document.getElementById('send').onclick = function() {
+
+            /* 이건 파이어베이스에서 걍 이렇게 쓰래 공식문서 보고 해도 될 듯 */
+      var file = document.querySelector('#image').files[0];
+      var storageRef = storage.ref();
+      var 저장할경로 = storageRef.child('image/' + file.name);
+      var 업로드작업 = 저장할경로.put(file)
+
+      업로드작업.on('state_changed',
+        // 변화시 동작하는 함수 
+        null,
+        //에러시 동작하는 함수
+        (error) => {
+          console.error('실패사유는', error);
+        },
+        // 성공시 동작하는 함수
+        () => {
+          업로드작업.snapshot.ref.getDownloadURL().then((url) => {
+            console.log('업로드된 경로는', url);
+            var title1 = document.getElementById("title").value;
+            var content1 = document.getElementById("content").value;
+            var price1 = document.getElementById("price").value;
+            var date = Date.now();
+            var imgimg = url
+            var uid = JSON.parse(localStorage.getItem('user')).uid
+            var userName = JSON.parse(localStorage.getItem('user')).displayName
+            db.collection('product').add({ 제목: title1, 내용: content1, 가격: Number(price1), 날짜: date, 이미지 : imgimg, uid, userName}).then((result) => {
+              console.log(result)
+              alert('업로드에 성공했습니다.')
+              window.location.href = '/index.html'
+            })
+              .catch((err) => {
+                alert('업로드에 실패했습니다.')
+                console.log(err)
+              })
+          });
+        }
+      );
+
+          /* DB에 들어갈 자료 */
+
+    }
+
+    // db.collection('product').add({ 제목 : '변기' })
+
+  </script>
+  
+</body>
+</html>
