@@ -95,14 +95,15 @@
     const storage = firebase.storage();  /* 파이어베이스 스토리지 소환 */
 
     // 유저정보 확인
-    var 뺀거 = localStorage.getItem('user')
-    $('#userName').html(JSON.parse(뺀거).displayName)
+    // var 뺀거 = localStorage.getItem('user')
+    // $('#userName').html(JSON.parse(뺀거).displayName)
     
     firebase.auth().onAuthStateChanged((user) => {
       if(user) {
         console.log(user.uid) /* 유저의 고유 id */
         console.log(user.displayName)   /* 유저가 정한 이름 */
         localStorage.setItem('user', JSON.stringify(user))
+        $('#userName').html(user.displayName)
       }
     })
 
@@ -115,7 +116,14 @@
 
         /* 파이어베이스 회원가입 소환 */
         firebase.auth().createUserWithEmailAndPassword(이메일, 패스워드).then((result) => {
-          console.log(result.user);
+          
+          var 유저정보 = {
+            name : 이름, 
+            email : 이메일
+          }
+          db.collection('user').doc(result.user).set(유저정보)
+
+          console.log(result.user.uid);
           result.user.updateProfile({displayName : 이름})
         })
         alert('회원가입 하였습니다. ')

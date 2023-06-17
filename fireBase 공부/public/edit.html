@@ -35,7 +35,7 @@
     <input type="text" class="form-control mt-2" id="title" placeholder="title">
     <textarea class="form-control mt-2" id="content">content</textarea>
     <input type="text" class="form-control mt-2" id="price" placeholder="price">
-    <button class="btn btn-danger mt-3" id="send">올리기</button>
+    <button class="btn btn-danger mt-3" id="send">수정 하기</button>
   </div>
 
 
@@ -71,6 +71,30 @@
   <script>
     const db = firebase.firestore();    /* 파이어베이스 db 소환 */
     const storage = firebase.storage();  /* 파이어베이스 스토리지 소환 */
+
+    var 쿼리스트링 = new URLSearchParams(window.location.search)
+    db.collection('product').doc(쿼리스트링.get('id')).get().then((doc) => {
+      console.log(doc.data())
+      $('#title').val(doc.data().제목)
+      $('#content').val(doc.data().내용)
+      $('#price').val(doc.data().가격)
+    })
+
+      $('#send').click(function () {
+        var 바꿀거 = {
+          제목: $('#title').val(),
+          내용: $('#content').val(),
+          가격: $('#price').val()
+        }
+
+        db.collection('product').doc(쿼리스트링.get('id')).update(바꿀거).then((result) => {
+          alert('수정 성공!')
+          window.location.href = '/index.html'
+        }).catch((err) => {
+          console.log(err)
+          alert('수정 실패')
+        })
+      })
 
   </script>
   
