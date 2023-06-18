@@ -27,8 +27,36 @@
   background-size: cover;
   background-position: center;
 }  
+.detail-pid {
+  width: 80%;
+  height: 500px;
+  background-size: contain;
+  background-position:top;
+  margin: auto;
+}
 
-
+.chat-content {
+  height: 450px;
+  overflow-y: scroll;
+  padding: 10px;
+}
+.chat-content li {
+  margin-top: 10px;
+}
+.text-small {
+  font-size: 12px;
+  color: gray;
+  margin-bottom: 0;
+}
+.chat-box {
+  background: #eee;
+  padding: 5px;
+  border-radius: 5px;
+  float: left;
+}
+.mine {
+  float: right;
+}
 
 
 

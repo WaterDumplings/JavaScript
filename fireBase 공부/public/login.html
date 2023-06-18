@@ -95,7 +95,7 @@
     const storage = firebase.storage();  /* 파이어베이스 스토리지 소환 */
 
     // 유저정보 확인
-    // var 뺀거 = localStorage.getItem('user')
+    var 뺀거 = localStorage.getItem('user')
     // $('#userName').html(JSON.parse(뺀거).displayName)
     
     firebase.auth().onAuthStateChanged((user) => {
@@ -121,7 +121,7 @@
             name : 이름, 
             email : 이메일
           }
-          db.collection('user').doc(result.user).set(유저정보)
+          db.collection('user').doc(result.user.uid).set(유저정보)
 
           console.log(result.user.uid);
           result.user.updateProfile({displayName : 이름})

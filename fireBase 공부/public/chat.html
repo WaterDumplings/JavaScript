@@ -54,20 +54,31 @@
     </ul>
   </nav>
 
-  <div class="container">
-    <button type="button" class="btn btn-info" id = "edit" >수정하기</button>
-    <button type="button" class="btn btn-success" id = "chat" >채팅하기</button>
-    <!-- 상세페이지임
-    <div class="detail-pic my-4" style="background-image: url('https://placeimg.com/640/380/tech');"></div>
-    <div>
-      <h5>올린사람 : 모름</h5>
-      <hr>
-      <h5 class="title">상품명</h5>
-      <p class="date">올린날짜</p>
-      <p class="price">가격</p>
-    </div> -->
-  </div>
-
+  <div class="container p-4 detail">
+    <div class="row">
+      <div class="col-3 p-0">
+        <ul class="list-group chat-list">
+          <li class="list-group-item">
+            <h6>채팅방1</h6>
+            <h6 class="text-small">채팅방아이디</h6>
+          </li>
+        </ul>
+      </div>
+      <div class="col-9 p-0">
+        <div class="chat-room">
+          <ul class="list-group chat-content">
+            <li><span class="chat-box">채팅방1 내용</span></li>
+            <li><span class="chat-box">채팅방1 내용</span></li>
+            <li><span class="chat-box mine">채팅방1 내용</span></li>
+          </ul>
+          <div class="input-group">
+            <input class="form-control" id="chat-input">
+            <button class="btn btn-secondary" id="send">전송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+ </div> 
 
 
 
@@ -79,65 +90,25 @@
     const db = firebase.firestore();    /* 파이어베이스 db 소환 */
     const storage = firebase.storage();  /* 파이어베이스 스토리지 소환 */
 
-    console.log(localStorage.getItem('user'))
-    
-
     var Ut = localStorage.getItem('user')
     $('.userNameLogin').html(JSON.parse(Ut).displayName)
 
-    var 쿼리스트링 = new URLSearchParams(window.location.search)
+    var 내uid = JSON.parse(localStorage.getItem('user')).uid;
 
-    var 판매자uid;
-    var 상품명;
-
-    db.collection('product').doc(쿼리스트링.get('id')).get().then((doc) => {
-
-      판매자uid = doc.data().uid;
-      상품명 = doc.data().제목;
-
-      console.log(doc.data())
-      var detailPost = `
-      <div class="detail-pic my-4" style="background-image: url(${doc.data().이미지});"></div>
-      <div>
-        <h5>올린사람 : ${doc.data().userName}</h5>
-        <hr>
-        <h5 class="title">${doc.data().제목}</h5>
-        <p class="date">${doc.data().내용}</p>
-        <p class="price">${doc.data().가격}원</p>
-      </div>
-    `
-    $('.container').append(detailPost)
-    })
-    
-    $('#edit').click(function(){
-      window.location.href = `/edit.html?id=${쿼리스트링.get('id')}`
-    })
-
-    var 내uid = JSON.parse(localStorage.getItem('user')).uid
-
-    $('#chat').click(function(result){
-      var 채팅 = {
-        // 시간 : Date.now(),
-        // 판매자 : 쿼리스트링.get('id'),
-        // 구매자 : JSON.parse(localStorage.getItem('user')).uid
-        who : [내uid, 판매자uid],
-        product : 상품명, 
-        date : new Date()
-      }
-      db.collection('chatroom').add(채팅).then((result) => {
-        alert('채팅 ㄱㄱㄱㄱㄱㄱㄱ')
-        console.log(result)
-        location.href = 'chat.html';
-      })
-      .catch((err) => {
-        alert('채팅 실패.')
-        console.log(err)
+      // where : query 할 때 이용하는 함수임 -> 내가 원하는 값만 뽑는것을 쿼리 한다라는 말임
+        // where('필드','==','값') 
+    db.collection('chatroom').where('who', 'array-contains', 내uid).get().then((result) => {
+      result.forEach((a) => {
+        console.log(a.data());
+        var template = `
+        <li class="list-group-item">
+            <h6>${ a.data().product }</h6>
+            <h6 class="text-small">${ a.id }</h6>
+          </li>
+        `
+        $('.chat-list').append(template)
       })
     })
-
-    console.log(쿼리스트링.get('id'))   /* 게시물 올린 유저 UID */
-    console.log(JSON.parse(localStorage.getItem('user')).uid)
-    
 
 
   </script>
